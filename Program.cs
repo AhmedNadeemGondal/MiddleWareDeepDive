@@ -1,5 +1,12 @@
+using MiddleWareDeepDive.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Import the custom middleware class and add it as a service
+// This is registering the class type in the services collection.
+builder.Services.AddTransient<MyCustomMiddleware>();
 var app = builder.Build();
+
 
 
 // The .Use() method is one way of creating a middleware.
@@ -19,35 +26,9 @@ app.Use(async (HttpContext context, RequestDelegate next) =>
     // Response will be sent back to the kestral server
 });
 
-// The UseWhen() i used to branch using a complex condition
-// It expects a delegate function for the condition and the pipeline configuration
-// it effectively insertes itself in-between the middleware's above and bwloe it.
-app.UseWhen((context) =>
-{
-    // The pipeline will insert the following two middlewares when the following conditions are met
-    return context.Request.Path.StartsWithSegments("/employees")
-     && context.Request.Query.ContainsKey("id");
-}, (app2) =>
-{
-    app2.Use(async (HttpContext context, RequestDelegate next) =>
-    {
-        await context.Response.WriteAsync("Middleware 5 before running next" + Environment.NewLine);
-
-        await next(context); // This will send the context to the second middleware rather than executing the next line
-
-        await context.Response.WriteAsync("Middleware 5 after running next" + Environment.NewLine);
-        // Response will be sent back to the kestral server
-    });
-    app2.Use(async (HttpContext context, RequestDelegate next) =>
-    {
-        await context.Response.WriteAsync("Middleware 6 before running next" + Environment.NewLine);
-
-        await next(context); // This will send the context to the second middleware rather than executing the next line
-
-        await context.Response.WriteAsync("Middleware 6 after running next" + Environment.NewLine);
-        // Response will be sent back to the kestral server
-    });
-});
+// Use the added middleware at a specfic location in the pipeline
+// This looks into the Services collection to find the intended type.
+app.UseMiddleware<MyCustomMiddleware>();
 
 app.Use(async (HttpContext context, RequestDelegate next) =>
 {
