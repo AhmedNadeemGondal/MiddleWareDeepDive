@@ -19,14 +19,40 @@ app.Use(async (HttpContext context, RequestDelegate next) =>
     // Response will be sent back to the kestral server
 });
 
-// app.Run() helps create terminal middleware
-// As the sequence of declaring middlewares is important
-// the Run() middleware causes all middleware below it to be short-circuited.
-app.Run(async (HttpContext context) =>
+// The Map() expects a path and provides a application builder interface
+// instance to build a seperate middleware pipeline based on the path.
+// This will brach off after the first middleware.
+app.Map("/employees", (app2) =>
+{
+    app2.Use(async (HttpContext context, RequestDelegate next) =>
+    {
+        await context.Response.WriteAsync("Middleware 5 before running next" + Environment.NewLine);
+
+        await next(context); // This will send the context to the second middleware rather than executing the next line
+
+        await context.Response.WriteAsync("Middleware 5 after running next" + Environment.NewLine);
+        // Response will be sent back to the kestral server
+    });
+    app2.Use(async (HttpContext context, RequestDelegate next) =>
+    {
+        await context.Response.WriteAsync("Middleware 6 before running next" + Environment.NewLine);
+
+        await next(context); // This will send the context to the second middleware rather than executing the next line
+
+        await context.Response.WriteAsync("Middleware 6 after running next" + Environment.NewLine);
+        // Response will be sent back to the kestral server
+    });
+});
+
+app.Use(async (HttpContext context, RequestDelegate next) =>
 {
     await context.Response.WriteAsync("Middleware 2 before running next" + Environment.NewLine);
 
-    
+    await next(context);
+
+    await context.Response.WriteAsync("Middleware 3 after running next" + Environment.NewLine);
+
+
 });
 
 app.Use(async (HttpContext context, RequestDelegate next) =>
