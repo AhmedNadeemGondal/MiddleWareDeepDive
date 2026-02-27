@@ -19,16 +19,14 @@ app.Use(async (HttpContext context, RequestDelegate next) =>
     // Response will be sent back to the kestral server
 });
 
-app.Use(async (HttpContext context, RequestDelegate next) =>
+// app.Run() helps create terminal middleware
+// As the sequence of declaring middlewares is important
+// the Run() middleware causes all middleware below it to be short-circuited.
+app.Run(async (HttpContext context) =>
 {
     await context.Response.WriteAsync("Middleware 2 before running next" + Environment.NewLine);
 
-    //await next(context); // This will send the context to the third middleware
-    // If the above code is commented, the middleware shortcircuits and moves to
-    // the next line and then back to the middleware that called it.
-
-    await context.Response.WriteAsync("Middleware 2 after running next" + Environment.NewLine);
-    // Execution will go back to after the next() function call of the first middleware
+    
 });
 
 app.Use(async (HttpContext context, RequestDelegate next) =>
