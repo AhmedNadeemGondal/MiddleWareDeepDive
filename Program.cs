@@ -19,10 +19,14 @@ app.Use(async (HttpContext context, RequestDelegate next) =>
     // Response will be sent back to the kestral server
 });
 
-// The Map() expects a path and provides a application builder interface
-// instance to build a seperate middleware pipeline based on the path.
-// This will brach off after the first middleware.
-app.Map("/employees", (app2) =>
+// The MapWhen() i used to branch using a complex condition
+// It expects a delegate function for the condition and the pipeline configuration 
+app.MapWhen((context) =>
+{
+    // The pipeline will brach when the following conditions are met
+    return context.Request.Path.StartsWithSegments("/employees")
+     && context.Request.Query.ContainsKey("id");
+}, (app2) =>
 {
     app2.Use(async (HttpContext context, RequestDelegate next) =>
     {
