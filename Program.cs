@@ -4,10 +4,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Import the custom middleware class and add it as a service
 // This is registering the class type in the services collection.
+builder.Services.AddSingleton<MyCustomExceptionMiddleware>();
 builder.Services.AddTransient<MyCustomMiddleware>();
 var app = builder.Build();
 
 
+app.UseMiddleware <MyCustomExceptionMiddleware>();
 
 // The .Use() method is one way of creating a middleware.
 // The Use() accepts a delegate and provides 2 parameters to the executing middleware
@@ -32,6 +34,8 @@ app.UseMiddleware<MyCustomMiddleware>();
 
 app.Use(async (HttpContext context, RequestDelegate next) =>
 {
+    throw new ApplicationException("Exception for testing");
+
     await context.Response.WriteAsync("Middleware 2 before running next" + Environment.NewLine);
 
     await next(context);
