@@ -19,11 +19,12 @@ app.Use(async (HttpContext context, RequestDelegate next) =>
     // Response will be sent back to the kestral server
 });
 
-// The MapWhen() i used to branch using a complex condition
-// It expects a delegate function for the condition and the pipeline configuration 
-app.MapWhen((context) =>
+// The UseWhen() i used to branch using a complex condition
+// It expects a delegate function for the condition and the pipeline configuration
+// it effectively insertes itself in-between the middleware's above and bwloe it.
+app.UseWhen((context) =>
 {
-    // The pipeline will brach when the following conditions are met
+    // The pipeline will insert the following two middlewares when the following conditions are met
     return context.Request.Path.StartsWithSegments("/employees")
      && context.Request.Query.ContainsKey("id");
 }, (app2) =>
