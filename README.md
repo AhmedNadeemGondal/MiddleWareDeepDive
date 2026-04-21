@@ -12,3 +12,6 @@ This repository is dedicated to exploring the internal mechanics and implementat
 - **The Pipeline Flow:** Visualizing the bi-directional nature of middleware execution.
 - **Short-circuiting:** Managing logic that prevents further middleware from executing.
 - **Dependency Injection:** Managing lifetimes (Scoped, Transient, Singleton) within middleware components.
+
+### Credits
+Credit to **Frank Liu**. Check out his [video series](https://www.youtube.com/watch?v=F4dDe0SLjJM&list=PLgRlicSxjeMOXiYY7deqzO5qKdkg9wrqM&index=1&pp=iAQB) for the original walkthrough.
